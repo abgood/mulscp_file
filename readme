@@ -1,0 +1,11 @@
+说明:
+    实现一台机器向多台机器传输文件,目标机器ip信息放在mysql里
+    数据库:iplist
+    表:iplist
+    表结构:id,ip,user,pawd,port
+
+1.安装
+    make
+    
+2.运行
+    ./scp 源文件路径 目标路径
