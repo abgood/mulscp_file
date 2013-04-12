@@ -34,24 +34,28 @@ int main(int argc,char **argv){
     
     // 读文件并分配信息
     while (fgets(strings, CHARS, file) != NULL) {
-        for (i = 0, p = strtok(strings, " "); p != NULL, i < COLS; p = strtok(NULL, " "), i++)
+        for (i = 0, p = strtok(strings, " "); p != NULL && i < COLS; p = strtok(NULL, " "), i++)
             point[i] = p;
+        // 新建临时节点
         ipinfo q = (ipinfo)malloc(sizeof(ipList));
         q->ip=malloc(EVERY);
         q->user=malloc(EVERY);
         q->pawd=malloc(EVERY);
         q->port=malloc(EVERY);
         q->is_ssh=1;
+        // 字符串拷贝,要不然还是指向的是strings
         strcpy(q->ip, point[0]);
         strcpy(q->user, point[1]);
         strcpy(q->pawd, point[2]);
         strcpy(q->port, point[3]);
         q->path=argv[2];
         q->next = NULL;
+        // 新节点赋值给尾节点
         tail->next = q;
         tail = q;
     }
 
+    // 循环节点进行传包
     while (head->next != NULL) {
         head = head->next;
         if (libssh_scp(head) < 0)
