@@ -8,6 +8,7 @@ int main(int argc,char **argv){
     char *point[COLS];
     char *p;
     int i;
+    // 声明首节点和尾节点并分配地址
     ipinfo head, tail;
     head = tail = (ipinfo)malloc(sizeof(ipList));
     tail->next = NULL;
