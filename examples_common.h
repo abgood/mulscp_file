@@ -18,10 +18,13 @@ clients must be made or how a client should react.
 #include <string.h>
 #include <errno.h>
 #include <libssh/libssh.h>
-#include <mysql/mysql.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+
+#define COLS 4
+#define CHARS 50
+#define EVERY 20
 
 typedef struct iplist
 {
@@ -34,13 +37,11 @@ typedef struct iplist
     ssh_session session;
     ssh_scp scp;
     FILE *file;
-}*ipinfo;
+    struct iplist *next;
+}*ipinfo, ipList;
 
 // 枚举
 enum {READ,WRITE};
-
-// 数据库查询
-MYSQL_RES *query_mysql(char *str);
 
 // 发包
 int libssh_scp(ipinfo iplist);

@@ -1,6 +1,6 @@
 说明:
-    实现一台机器向多台机器传输文件,目标机器ip信息放在file里
-    file内容:id,ip,user,pawd,port
+    实现一台机器向多台机器传输文件,目标机器ip信息放在iplist里
+    iplist内容:ip,user,pawd,port
 
 1.安装
     make

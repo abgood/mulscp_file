@@ -2,36 +2,15 @@
 
 ipinfo location;
 
-int scpbag(MYSQL_ROW rows,char **argv){
-    ipinfo iplist;
-
-    // iplist动态分配内存
-    if ((iplist=malloc(sizeof(struct iplist))) == NULL)
-    {
-        fprintf(stderr, "iplist结构动态分配内存错误\n");
-        exit(1);
-    }
-
-    // ip信息分别赋值
-    iplist->is_ssh=1;
-    iplist->ip=rows[1];
-    iplist->user=rows[2];
-    iplist->pawd=rows[3];
-    iplist->port=rows[4];
-    iplist->path=argv[2];
-
-    // 发包
-    if (libssh_scp(iplist) < 0)
-    {
-        fprintf(stderr, "传包开始失败,请检查\n");
-        return -1;
-    }
-    return 0;           
-}
-
 int main(int argc,char **argv){
-    MYSQL_RES *res;
-    MYSQL_ROW rows;
+    FILE *file = fopen("iplist", "r");
+    char *strings = malloc(CHARS);
+    char *point[COLS];
+    char *p;
+    int i;
+    ipinfo head, tail;
+    head = tail = (ipinfo)malloc(sizeof(ipList));
+    tail->next = NULL;
 
     // argc长度
     if (argc!=3)
@@ -52,22 +31,35 @@ int main(int argc,char **argv){
     location->pawd="123456";
     location->port="22";
     location->path=argv[1];
-
-    // 查询数据库
-    char *str="select * from iplist";
-    if ((res=query_mysql(str)) == NULL)
-    {
-        fprintf(stderr, "数据库结果集返回错误\n");
-        return -1;
+    
+    // 读文件并分配信息
+    while (fgets(strings, CHARS, file) != NULL) {
+        for (i = 0, p = strtok(strings, " "); p != NULL, i < COLS; p = strtok(NULL, " "), i++)
+            point[i] = p;
+        ipinfo q = (ipinfo)malloc(sizeof(ipList));
+        q->ip=malloc(EVERY);
+        q->user=malloc(EVERY);
+        q->pawd=malloc(EVERY);
+        q->port=malloc(EVERY);
+        q->is_ssh=1;
+        strcpy(q->ip, point[0]);
+        strcpy(q->user, point[1]);
+        strcpy(q->pawd, point[2]);
+        strcpy(q->port, point[3]);
+        q->path=argv[2];
+        q->next = NULL;
+        tail->next = q;
+        tail = q;
     }
 
-    // 获取结果集内容
-    while((rows=mysql_fetch_row(res))){
-        if (scpbag(rows,argv) < 0)
+    while (head->next != NULL) {
+        head = head->next;
+        if (libssh_scp(head) < 0)
         {
-            fprintf(stderr, "传包前的分配信息失败,请检查\n%s 传包失败\n",rows[1]);
+            fprintf(stderr, "传包开始失败,请检查\n");
             return -1;
         }
     }
+
     return 0;
 }

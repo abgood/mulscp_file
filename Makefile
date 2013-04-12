@@ -16,7 +16,7 @@ SOURCES = $(wildcard *.c)
 OBJS = $(patsubst %.c,%.o,$(SOURCES))
 
 $(TARGET):$(OBJS)
-	$(CC) $(OBJS) -o $(TARGET) $(LIBMYSQL) $(LIBSSH)
+	$(CC) $(OBJS) -o $(TARGET) $(LIBSSH)
 	chmod u+x $(TARGET)
 
 clean:
